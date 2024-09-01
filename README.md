@@ -1,8 +1,12 @@
 # Umbraco Security System Requirements
 
-## Overview
+Demo app and write up for Umbraco Security Engineering position
 
-### Application Summary
+## Security issues in free trial
+
+Pass, I can't find anything in the public commercial software, as I'm not a pen tester (yet).
+
+## Application writeup
 
 This web application allows users to select and prioritize languages to display the website in their preferred language. It supports multilingual text and settings synchronized across browser tabs but isolated across different sessions.
 
