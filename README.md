@@ -1,129 +1,60 @@
-# Umbraco Security Interview Writeup
+# Umbraco Security System Requirements
 
-Demo app and write up for Umbraco Security Engineering position
+## Overview
 
-## Security issues in free trial
+### Application Summary
 
-Pass, I can't find anything in the public commercial software, as I'm a pen tester (yet).
+This web application allows users to select and prioritize languages to display the website in their preferred language. It supports multilingual text and settings synchronized across browser tabs but isolated across different sessions.
 
-## Languages app
+### Features
 
-The application is a simple website that allows a user to select one or more languages, order them by preference, and have the website be displayed in the top most selected language.
+1. **Language Selection and Ordering**:
 
-### Frontend UI
+   - Users can select languages and reorder them by dragging and dropping.
+   - Users can change locale specific versions of the language by using a dropdown on each language.
+   - The top-selected language determines the display language of the website.
+   - Changes are saved in the browser’s local storage to persist across sessions.
 
-- The site has text at the top to describe the purpose of the site. This text is translated to the currently selected language and is gotten from the `translations` object in local storage. The key for the text value is `SortLanguagesPrompt`.
+2. **Add Language Modal**:
 
-- Below the description, there is a list of languages that the user has chosen. The languages are displayed in the language of the currently selected language (the language at the top). The languages are fetched from the `/allLanguages/<code>` endpoint, where `<code>` is the language code of the currently selected language.
+   - A modal window allows users to search for and add new languages.
+   - It includes real-time, case-insensitive search and multiple selection (checkboxes).
 
-- The list consists of cards, where each card has the language written to the left, and a delete button to the right. Each has a dropdown arrow in the middle (right aligned) which allows the user to change the localized version of the language. The dropdown is populated with the locales of the language, and the language is changed when a locale is selected.
+3. **Dynamic Text and UI Updates**:
 
-- The list a drag and drop functionality, where the user can drag and drop the languages to change the order. The order is saved in local storage, and is used to determine the order of the languages (read ahead for implementation).
+   - Text elements such as descriptions and buttons are translated into the top-selected language.
+   - Translations are fetched from the `/translations/<language code>` endpoint and stored in local storage.
+   - The application fetches available languages from the `/allLanguages/<language code>` endpoint.
+   - The site main and specific languages text is updated in real-time when the user changes the selected language or it's locale.
 
-- There is a button at the bottom of the list that allows the user to add more languages to the list. It's text is specified by the currently selected language (read ahead for language implementation), the text is also gotten from the `translations` object in local storage, with the key for the text value being `ChoosePreferredLanguagesPrompt`. This button spawns a modal (dialog) that allows the user to search for languages and add them to the list.
+4. **Local Storage Usage**:
 
-#### Add language modal
+   - Language preferences and translations are stored in local storage as `deviceSettings` and `translations`.
+   - The `deviceSettings` key contains an array of selected language codes, dictating the order of languages.
+   - The `translations` key contains localized text for various UI elements.
 
-- The modal has a search bar at the top that allows the user to search for languages. The search is done in real time, and filters the languages based on the input. The search is case insensitive.
+5. **Cross-Tab Synchronization**:
 
-- Next to the search bar, there is a button with an X that closes the modal.
+   - The application uses a `StorageEvent` listener to detect changes in local storage and update all open tabs accordingly.
 
-- Below the search bar, there is a list of languages that can be selected. Each language has a checkbox to the left of it, and the language name to the right. The language name is in the language of the currently selected (top most) language (read ahead for translations implementation).
+6. **Backend Endpoints**:
 
-- Below, the list to the left, there is a duplicate search bar, which i synced with the one above.
+   - **GET `/allLanguages/<language code>`**: Returns a list of all languages translated into the specified language.
+   - **GET `/translations/<language code>`**: Returns the site text translations for the specified language.
+   - The `<language code>` is an ISO language code such as **da**.
 
-- To the bottom right, the modal has a button to add the selected languages to the list of chosen languages. This button is not disabled if no languages are selected.
+### Backend Storage
 
-- The button has the text **"Add \<language\>"** and then if several are selected, it will comma sepperate them like this **"Add \<language\>, \<language\>, \<language\>"** and so on. The **"Add"** is always in english, and the language names are in the language of the currently selected (top most) language.
+- **Data Storage**:
 
-### Frontend functionality
+  - Data could be stored in a NoSQL database like MongoDB for efficiency and flexibility.
+  - Language data and translations can be organized by language code to optimize read performance and support easy additions of new languages.
 
-- All the languages available are fetched from the `/allLanguages/<code>` endpoint, and are stored in an array in memory. See the backend section for more information on the endpoint.
+- **Proposed Schemas**:
+  - **Languages Schema**: Each document represents a language with its corresponding translations and locales.
+  - **Translations Schema**: Stores UI text in different languages to support localization.
 
-- The current settings are stored in local storage to persist in sessions / tabs. This is represented with the key `deviceSettings` that has the JSON formatted language codes. This object is represented like so:
+### Potential Improvements
 
-  ```
-  {
-    "languages" : [
-      <language code string>
-    ]
-  }
-  ```
-
-  When adding several chosen languages, this is the array that is appended to, to represent state accross tabs. This is also the array that dictates the order of the languages. So when the page loads, it checks if this array is in local storage, and if it is, it uses this array to populate the list of chosen languages. If it is not, it uses danish as the default language, and sets the array to `["da"]`.
-
-- The top most (first) element in the array is the chosen one.
-
-- The language specific translations of the sites text, such as the initial description and the add button is recieved from the `/translations/<code>` endpoint, and stored in local storage. This is set with the key `translations` with the JSON value of:
-
-  ```
-  {
-    "SortLanguagesPrompt" : <description text string>,
-    "ChoosePreferredLanguagesPrompt" : <add button text string>,
-    "NextButtonText" : <next button text string> (unused?)
-  }
-  ```
-
-- To keep state the same accross tabs, the site needs to listen to the local storage changes, thus it must implement a listener on `StorageEvent` to check for changes, and reload with the new settings.
-
-- Upon changing the specific local language (using the dropdown on a specific language), no matter the language, a request is made to `/translations/<code>` for the currently selected (top most) language to update descriptions.
-
-- If a change is made to the local language (using the dropdown) that is at the top, then both a request to `/translations/<code>` and `/allLanguages/<code>` is made to update the language used to show the other languages.
-
-- When a language is set as the first (top), a request is again sent to both previous endpoints with the new language code, and the text of the site and languages are updated, just as previously described. See pictures below, where the top 2 languages are switched. Notice how both the site text changes, and the names of the languages are changed to represent the new top language.
-
-![danish language](images/lang_code_0.png)
-![Azerbaijani language](images/lang_code_1.png)
-
-### Backend
-
-- The `/allLanguages/<code>` endpoint returnins a list of all languages, translated into the specified language. It has the `isSelected` field in each language be false, except for the specified language, which is true. A shortened list of the returned languages would look like this:
-
-  ```
-  [
-    {
-      "isSelected": false,
-      "languageIsoCodesWithLocales": {
-        "cy": "Cymraeg (walisisk)",
-        "cy-GB": "Cymraeg (walisisk) - Y Deyrnas Unedig (United Kingdom)"
-      }
-    },
-    {
-      "isSelected": true,
-      "languageIsoCodesWithLocales": {
-        "da": "dansk",
-        "da-DK": "dansk - Danmark (Denmark)",
-        "da-GL": "dansk - Grønland (Greenland)"
-      }
-    },
-    {
-      "isSelected": false,
-      "languageIsoCodesWithLocales": {
-        "dav": "Kitaita (taita)",
-        "dav-KE": "Kitaita (taita) - Kenya"
-      }
-    }
-  ]
-  ```
-
-  _Notice how the `languageIsoCodesWithLocales` object has the language code as the key, and the language name as the value. This is used to display the language locales in the dropdown on each language._
-
-- The `/translations/<code>` endpoint returns the translations of the site text in the specified language. The response is a JSON object with the keys `SortLanguagesPrompt`, `ChoosePreferredLanguagesPrompt`, and `NextButtonText` with the corresponding text in the specified language. An example response would look like this:
-
-  ```
-  {
-    "SortLanguagesPrompt": "Vælg dine foretrukne sprog",
-    "ChoosePreferredLanguagesPrompt": "Tilføj sprog",
-    "NextButtonText": "Næste"
-  }
-  ```
-
-  If no translations are found, the response is filled with the key as the value, like this:
-
-  ```
-  {
-    "SortLanguagesPrompt": "SortLanguagesPrompt",
-    "ChoosePreferredLanguagesPrompt": "ChoosePreferredLanguagesPrompt",
-    "NextButtonText": "NextButtonText"
-  }
-  ```
+- Consider using a relational database for structured data and complex queries.
+- Implement caching strategies to minimize database reads and enhance performance.
