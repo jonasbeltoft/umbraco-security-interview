@@ -81,7 +81,7 @@ onMounted(() => {
 // Emit event when language is changed
 watch(
   () => chosen_languages,
-  (lang, prevLang) => {
+  (lang) => {
     // Check if the current locale has changed
     emit("lang_change", lang.value[0].current_locale);
   },
