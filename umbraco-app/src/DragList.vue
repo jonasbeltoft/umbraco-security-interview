@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 
 import draggable from "vuedraggable";
-import { watch } from "vue";
+import { onMounted, watch } from "vue";
 import { useStorage } from "@vueuse/core";
 
 // const chosen_languages = ref<Language[]>([
@@ -74,6 +74,10 @@ function updateLocale(locale: string) {
   });
 }
 
+// Emit the top language when the site loads
+onMounted(() => {
+  emit("lang_change", chosen_languages.value[0].current_locale);
+});
 // Emit event when language is changed
 watch(
   () => chosen_languages,
@@ -91,7 +95,6 @@ watch(
     item-key="current_locale"
     class="rounded-md border p-6 flex flex-col gap-3"
     ghost-class="ghost"
-    @end=""
   >
     <template #item="{ element: language }">
       <Card class="transition-all cursor-move flex flex-row">

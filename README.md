@@ -18,10 +18,12 @@ This web application allows users to select and prioritize languages to display 
    - Users can change locale specific versions of the language by using a dropdown on each language.
    - The top-selected language determines the display language of the website.
    - Changes are saved in the browser’s local storage to persist across sessions.
+   - Users can delete languages by clicking the trash icon.
 
 2. **Add Language Modal**:
 
    - A modal window allows users to search for and add new languages.
+   - The button to open the modal is located at the bottom of the language list.
    - It includes real-time, case-insensitive search and multiple selection (checkboxes).
 
 3. **Dynamic Text and UI Updates**:
