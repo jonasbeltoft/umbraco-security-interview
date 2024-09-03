@@ -17,5 +17,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/umbraco-security-interview/'
+  base: process.env.NODE_ENV === "production" ? "/umbraco-vue/" : "/"
 })

@@ -1,18 +1,34 @@
-name: Deploy Vue
+name: Deploy to GH Pages
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  build_vue:
+  build-deploy:
     runs-on: ubuntu-latest
-    name: Build Vue
+
     steps:
-      - uses: actions/checkout@v2
-      - id: Build-Vue
-        working-directory: ./umbraco-app
-        uses: xRealNeon/VuePagesAction@1.0.1
+      - name: Checkout 🛎️
+        uses: actions/checkout@master
         with:
-          username: "jonasbeltoft"
-          reponame: "umbraco-security-interview"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+
+      - name: Install 🔧
+        working-directory: ./umbraco-app
+        run: npm install
+
+      - name: Build 🏗️
+        working-directory: ./umbraco-app
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to GH Pages 🚀
+        working-directory: ./umbraco-app
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
