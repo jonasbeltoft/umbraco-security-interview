@@ -68,6 +68,7 @@ function addLanguages() {
     </h4>
     <DragList @lang_change="onlanguagechange" />
     <Dialog>
+      <!-- v-on:update:open="(open) => (open ? '' : (search = ''))" -->
       <DialogTrigger as-child>
         <Button>
           {{ page_text.button_text }}
