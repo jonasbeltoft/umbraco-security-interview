@@ -10,55 +10,61 @@ import {
 } from "@/components/ui/select";
 
 import draggable from "vuedraggable";
-import { onBeforeMount, ref, watch, computed, toRaw } from "vue";
-import type { Language } from "./lib/types";
+import { watch } from "vue";
+import { useStorage } from "@vueuse/core";
 
-const chosen_languages = ref<Language[]>([
-  { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
-  { name: "English", current_locale: "en", locales: ["en", "en-GB"] },
-  { name: "German", current_locale: "de", locales: ["de", "de-DE"] },
-  { name: "Spanish", current_locale: "es", locales: ["es", "es-ES"] },
-  { name: "French", current_locale: "fr", locales: ["fr", "fr-FR"] },
-  { name: "Italian", current_locale: "it", locales: ["it", "it-IT"] },
-  { name: "Dutch", current_locale: "nl", locales: ["nl", "nl-NL"] },
-  { name: "Norwegian", current_locale: "no", locales: ["no", "no-NO"] },
-  { name: "Swedish", current_locale: "sv", locales: ["sv", "sv-SE"] },
-  { name: "Finnish", current_locale: "fi", locales: ["fi", "fi-FI"] },
-  { name: "Portuguese", current_locale: "pt", locales: ["pt", "pt-PT"] },
-  { name: "Russian", current_locale: "ru", locales: ["ru", "ru-RU"] },
-  { name: "Polish", current_locale: "pl", locales: ["pl", "pl-PL"] },
-  { name: "Chinese", current_locale: "zh", locales: ["zh", "zh-CN"] },
-  { name: "Japanese", current_locale: "ja", locales: ["ja", "ja-JP"] },
-  { name: "Korean", current_locale: "ko", locales: ["ko", "ko-KR"] },
-  { name: "Arabic", current_locale: "ar", locales: ["ar", "ar-AR"] },
-  { name: "Turkish", current_locale: "tr", locales: ["tr", "tr-TR"] },
-  { name: "Greek", current_locale: "el", locales: ["el", "el-EL"] },
-  { name: "Czech", current_locale: "cs", locales: ["cs", "cs-CZ"] },
-  { name: "Hungarian", current_locale: "hu", locales: ["hu", "hu-HU"] },
-]);
+// const chosen_languages = ref<Language[]>([
+//   { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
+//   { name: "English", current_locale: "en", locales: ["en", "en-GB"] },
+//   { name: "German", current_locale: "de", locales: ["de", "de-DE"] },
+//   { name: "Spanish", current_locale: "es", locales: ["es", "es-ES"] },
+//   { name: "French", current_locale: "fr", locales: ["fr", "fr-FR"] },
+//   { name: "Italian", current_locale: "it", locales: ["it", "it-IT"] },
+//   { name: "Dutch", current_locale: "nl", locales: ["nl", "nl-NL"] },
+//   { name: "Norwegian", current_locale: "no", locales: ["no", "no-NO"] },
+//   { name: "Swedish", current_locale: "sv", locales: ["sv", "sv-SE"] },
+//   { name: "Finnish", current_locale: "fi", locales: ["fi", "fi-FI"] },
+//   { name: "Portuguese", current_locale: "pt", locales: ["pt", "pt-PT"] },
+//   { name: "Russian", current_locale: "ru", locales: ["ru", "ru-RU"] },
+//   { name: "Polish", current_locale: "pl", locales: ["pl", "pl-PL"] },
+//   { name: "Chinese", current_locale: "zh", locales: ["zh", "zh-CN"] },
+//   { name: "Japanese", current_locale: "ja", locales: ["ja", "ja-JP"] },
+//   { name: "Korean", current_locale: "ko", locales: ["ko", "ko-KR"] },
+//   { name: "Arabic", current_locale: "ar", locales: ["ar", "ar-AR"] },
+//   { name: "Turkish", current_locale: "tr", locales: ["tr", "tr-TR"] },
+//   { name: "Greek", current_locale: "el", locales: ["el", "el-EL"] },
+//   { name: "Czech", current_locale: "cs", locales: ["cs", "cs-CZ"] },
+//   { name: "Hungarian", current_locale: "hu", locales: ["hu", "hu-HU"] },
+// ]);
 
 const emit = defineEmits(["lang_change"]);
 
-function setStorage() {
-  localStorage.setItem(
-    "chosen_languages",
-    JSON.stringify(chosen_languages.value)
-  );
-}
-
 // Load chosen languages from local storage
-onBeforeMount(() => {
-  const langs = localStorage.getItem("chosen_languages");
-  if (langs) {
-    chosen_languages.value = JSON.parse(langs);
-  } else {
-    // If no languages are chosen, set Danish as default
-    chosen_languages.value = [
-      { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
-    ];
-    setStorage();
-  }
-});
+const chosen_languages = useStorage("chosen_languages", [
+  { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
+]);
+
+// { name: "English", current_locale: "en", locales: ["en", "en-GB"] },
+//   { name: "German", current_locale: "de", locales: ["de", "de-DE"] },
+//   { name: "Spanish", current_locale: "es", locales: ["es", "es-ES"] },
+//   { name: "French", current_locale: "fr", locales: ["fr", "fr-FR"] },
+//   { name: "Italian", current_locale: "it", locales: ["it", "it-IT"] },
+//   { name: "Dutch", current_locale: "nl", locales: ["nl", "nl-NL"] },
+//   { name: "Norwegian", current_locale: "no", locales: ["no", "no-NO"] },
+//   { name: "Swedish", current_locale: "sv", locales: ["sv", "sv-SE"] },
+//   { name: "Finnish", current_locale: "fi", locales: ["fi", "fi-FI"] },
+//   { name: "Portuguese", current_locale: "pt", locales: ["pt", "pt-PT"] },
+//   { name: "Russian", current_locale: "ru", locales: ["ru", "ru-RU"] },
+//   { name: "Polish", current_locale: "pl", locales: ["pl", "pl-PL"] },
+//   { name: "Chinese", current_locale: "zh", locales: ["zh", "zh-CN"] },
+//   { name: "Japanese", current_locale: "ja", locales: ["ja", "ja-JP"] },
+//   { name: "Korean", current_locale: "ko", locales: ["ko", "ko-KR"] },
+//   { name: "Arabic", current_locale: "ar", locales: ["ar", "ar-AR"] },
+//   { name: "Turkish", current_locale: "tr", locales: ["tr", "tr-TR"] },
+//   { name: "Greek", current_locale: "el", locales: ["el", "el-EL"] },
+//   { name: "Czech", current_locale: "cs", locales: ["cs", "cs-CZ"] },
+
+// A dropwdown has been set, update the locale for the corresponding language
 
 function updateLocale(locale: string) {
   chosen_languages.value.forEach((lang) => {
@@ -66,7 +72,6 @@ function updateLocale(locale: string) {
       lang.current_locale = locale;
     }
   });
-  setStorage();
 }
 
 // Emit event when language is changed
@@ -86,7 +91,7 @@ watch(
     item-key="current_locale"
     class="rounded-md border p-6 flex flex-col gap-3"
     ghost-class="ghost"
-    @end="setStorage()"
+    @end=""
   >
     <template #item="{ element: language }">
       <Card class="transition-all cursor-move flex flex-row">

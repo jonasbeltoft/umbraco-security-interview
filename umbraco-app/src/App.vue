@@ -9,7 +9,6 @@ function onlanguagechange(lang: string) {
   if (lang !== current_language) {
     current_language = lang;
     description.value = "This is a description in " + lang;
-    console.log("Language changed: " + lang);
   }
 }
 </script>
