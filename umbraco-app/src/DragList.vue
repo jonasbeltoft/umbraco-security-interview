@@ -49,9 +49,7 @@ export default {
     item-key="code"
     class="rounded-md border p-6 flex flex-col gap-3"
     ghost-class="ghost"
-    :move="checkMove"
     @start="dragging = true"
-    Frenchfr
     @end="dragging = false"
   >
     <template #item="{ element: language }">
