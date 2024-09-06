@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Card, CardTitle, CardHeader } from "./components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-vue-next";
 import {
   Select,
   SelectContent,
@@ -10,39 +12,31 @@ import {
 } from "@/components/ui/select";
 
 import draggable from "vuedraggable";
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useStorage } from "@vueuse/core";
 
-// const chosen_languages = ref<Language[]>([
-//   { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
-//   { name: "English", current_locale: "en", locales: ["en", "en-GB"] },
-//   { name: "German", current_locale: "de", locales: ["de", "de-DE"] },
-//   { name: "Spanish", current_locale: "es", locales: ["es", "es-ES"] },
-//   { name: "French", current_locale: "fr", locales: ["fr", "fr-FR"] },
-//   { name: "Italian", current_locale: "it", locales: ["it", "it-IT"] },
-//   { name: "Dutch", current_locale: "nl", locales: ["nl", "nl-NL"] },
-//   { name: "Norwegian", current_locale: "no", locales: ["no", "no-NO"] },
-//   { name: "Swedish", current_locale: "sv", locales: ["sv", "sv-SE"] },
-//   { name: "Finnish", current_locale: "fi", locales: ["fi", "fi-FI"] },
-//   { name: "Portuguese", current_locale: "pt", locales: ["pt", "pt-PT"] },
-//   { name: "Russian", current_locale: "ru", locales: ["ru", "ru-RU"] },
-//   { name: "Polish", current_locale: "pl", locales: ["pl", "pl-PL"] },
-//   { name: "Chinese", current_locale: "zh", locales: ["zh", "zh-CN"] },
-//   { name: "Japanese", current_locale: "ja", locales: ["ja", "ja-JP"] },
-//   { name: "Korean", current_locale: "ko", locales: ["ko", "ko-KR"] },
-//   { name: "Arabic", current_locale: "ar", locales: ["ar", "ar-AR"] },
-//   { name: "Turkish", current_locale: "tr", locales: ["tr", "tr-TR"] },
-//   { name: "Greek", current_locale: "el", locales: ["el", "el-EL"] },
-//   { name: "Czech", current_locale: "cs", locales: ["cs", "cs-CZ"] },
-//   { name: "Hungarian", current_locale: "hu", locales: ["hu", "hu-HU"] },
-// ]);
-
 const emit = defineEmits(["lang_change"]);
+const props = defineProps({
+  all_languages: {
+    type: Array<{
+      name: string;
+      chosen: boolean;
+      current_locale: string;
+      locales: Array<string>;
+    }>,
+    required: true,
+  },
+});
 
-// Load chosen languages from local storage
-const chosen_languages = useStorage("chosen_languages", [
-  { name: "Danish", current_locale: "da", locales: ["da", "da-DK"] },
-]);
+const chosen_languages = useStorage("chosen_languages", ["da"]);
+
+const DEFAULT_LANGUAGES = ["da"];
+
+const computedLangs = computed(() => {
+  return chosen_languages.value.map((lang: string) =>
+    props.all_languages?.find((l: any) => l.locales.includes(lang))
+  );
+});
 
 // { name: "English", current_locale: "en", locales: ["en", "en-GB"] },
 //   { name: "German", current_locale: "de", locales: ["de", "de-DE"] },
@@ -67,23 +61,32 @@ const chosen_languages = useStorage("chosen_languages", [
 // A dropwdown has been set, update the locale for the corresponding language
 
 function updateLocale(locale: string) {
-  chosen_languages.value.forEach((lang) => {
+  computedLangs.value.forEach((lang: any) => {
     if (lang.locales.includes(locale)) {
       lang.current_locale = locale;
     }
   });
 }
 
+function deleteLanguage(language: any) {
+  if (computedLangs.value.length === 1) {
+    chosen_languages.value = DEFAULT_LANGUAGES.flat();
+    return;
+  }
+  const index = chosen_languages.value.indexOf(language);
+  chosen_languages.value.splice(index, 1);
+}
+
 // Emit the top language when the site loads
 onMounted(() => {
-  emit("lang_change", chosen_languages.value[0].current_locale);
+  emit("lang_change", computedLangs?.value[0]?.current_locale);
 });
 // Emit event when language is changed
 watch(
-  () => chosen_languages,
+  () => computedLangs,
   (lang) => {
     // Check if the current locale has changed
-    emit("lang_change", lang.value[0].current_locale);
+    emit("lang_change", lang.value[0]?.current_locale);
   },
   { deep: true }
 );
@@ -91,7 +94,7 @@ watch(
 
 <template>
   <draggable
-    :list="chosen_languages"
+    :list="computedLangs"
     item-key="current_locale"
     class="rounded-md border p-6 flex flex-col gap-3"
     ghost-class="ghost"
@@ -116,6 +119,14 @@ watch(
             </SelectGroup>
           </SelectContent>
         </Select>
+        <Button
+          @click="deleteLanguage(language)"
+          class="my-auto mr-4"
+          variant="outline"
+          size="icon"
+        >
+          <Trash class="w-4 h-4" />
+        </Button>
       </Card>
     </template>
   </draggable>
