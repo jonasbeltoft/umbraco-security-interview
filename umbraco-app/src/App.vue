@@ -31,140 +31,11 @@ const page_text = useStorage("page_text", {
   button_text: "Add languages",
   description: "This is a description",
 });
-
-let all_languages = ref([
-  {
-    name: "Danish",
-    chosen: true,
-    current_locale: "da",
-    locales: ["da", "da-DK"],
-  },
-  {
-    name: "English",
-    chosen: true,
-    current_locale: "en",
-    locales: ["en", "en-GB"],
-  },
-  {
-    name: "German",
-    chosen: false,
-    current_locale: "de",
-    locales: ["de", "de-DE"],
-  },
-  {
-    name: "Spanish",
-    chosen: false,
-    current_locale: "es",
-    locales: ["es", "es-ES"],
-  },
-  {
-    name: "French",
-    chosen: false,
-    current_locale: "fr",
-    locales: ["fr", "fr-FR"],
-  },
-  {
-    name: "Italian",
-    chosen: false,
-    current_locale: "it",
-    locales: ["it", "it-IT"],
-  },
-  {
-    name: "Dutch",
-    chosen: false,
-    current_locale: "nl",
-    locales: ["nl", "nl-NL"],
-  },
-  {
-    name: "Norwegian",
-    chosen: false,
-    current_locale: "no",
-    locales: ["no", "no-NO"],
-  },
-  {
-    name: "Swedish",
-    chosen: false,
-    current_locale: "sv",
-    locales: ["sv", "sv-SE"],
-  },
-  {
-    name: "Finnish",
-    chosen: false,
-    current_locale: "fi",
-    locales: ["fi", "fi-FI"],
-  },
-  {
-    name: "Portuguese",
-    chosen: false,
-    current_locale: "pt",
-    locales: ["pt", "pt-PT"],
-  },
-  {
-    name: "Polish",
-    chosen: false,
-    current_locale: "pl",
-    locales: ["pl", "pl-PL"],
-  },
-  {
-    name: "Chinese",
-    chosen: false,
-    current_locale: "zh",
-    locales: ["zh", "zh-CN"],
-  },
-  {
-    name: "Japanese",
-    chosen: false,
-    current_locale: "ja",
-    locales: ["ja", "ja-JP"],
-  },
-  {
-    name: "Korean",
-    chosen: false,
-    current_locale: "ko",
-    locales: ["ko", "ko-KR"],
-  },
-  {
-    name: "Arabic",
-    chosen: false,
-    current_locale: "ar",
-    locales: ["ar", "ar-AR"],
-  },
-  {
-    name: "Turkish",
-    chosen: false,
-    current_locale: "tr",
-    locales: ["tr", "tr-TR"],
-  },
-  {
-    name: "Greek",
-    chosen: false,
-    current_locale: "el",
-    locales: ["el", "el-EL"],
-  },
-  {
-    name: "Czech",
-    chosen: false,
-    current_locale: "cs",
-    locales: ["cs", "cs-CZ"],
-  },
-]);
-
 const DEFAULT_LANGUAGES = ["da"];
-
 // Load chosen languages from local storage
 const chosen_languages = useStorage("chosen_languages", DEFAULT_LANGUAGES);
 
 const current_language = computed(() => chosen_languages.value[0]);
-
-watch(
-  current_language,
-  (lang) => {
-    page_text.value.description = "This is a description in " + lang;
-  },
-  {
-    immediate: true,
-  }
-);
 
 let search = ref("");
 
@@ -188,7 +59,7 @@ function deleteLanguage(language: any) {
     chosen_languages.value = DEFAULT_LANGUAGES.flat();
     for (let i = 0; i < all_languages.value.length; i++) {
       if (
-        !all_languages.value[i].locales.some((locale) =>
+        !all_languages.value[i].locales.some((locale: string) =>
           DEFAULT_LANGUAGES.includes(locale)
         )
       ) {
@@ -226,6 +97,123 @@ function handleClose(open: boolean) {
     checked_languages.value = [];
   }
 }
+
+const all_languages = ref([
+  {
+    name: "English",
+    current_locale: "en",
+    chosen: false, // You can update this based on selected languages
+    locales: ["en-US", "en"],
+    translations: [
+      { code: "en", translation: "English" },
+      { code: "en-US", translation: "English - US" },
+      { code: "da", translation: "Danish" },
+      { code: "da-DK", translation: "Danish - Denmark" },
+      { code: "sv", translation: "Swedish" },
+      { code: "no", translation: "Norwegian" },
+      { code: "de", translation: "German" },
+      { code: "nl", translation: "Dutch" },
+    ],
+  },
+  {
+    name: "Dansk",
+    current_locale: "da",
+    chosen: false,
+    locales: ["da-DK", "da"],
+    translations: [
+      { code: "da", translation: "Dansk" },
+      { code: "da-DK", translation: "Dansk - Danmark" },
+      { code: "en", translation: "Engelsk" },
+      { code: "en-US", translation: "Engelsk - US" },
+      { code: "sv", translation: "Svensk" },
+      { code: "no", translation: "Norsk" },
+      { code: "de", translation: "Tysk" },
+      { code: "nl", translation: "Hollandsk" },
+    ],
+  },
+  {
+    name: "Svenska",
+    current_locale: "sv",
+    chosen: false,
+    locales: ["sv"],
+    translations: [
+      { code: "sv", translation: "Svenska" },
+      { code: "en", translation: "Engelska" },
+      { code: "en-US", translation: "Engelska - US" },
+      { code: "da", translation: "Danska" },
+      { code: "da-DK", translation: "Danska - Danmark" },
+      { code: "no", translation: "Norska" },
+      { code: "de", translation: "Tyska" },
+      { code: "nl", translation: "Holländska" },
+    ],
+  },
+  {
+    name: "Norsk",
+    current_locale: "no",
+    chosen: false,
+    locales: ["no"],
+    translations: [
+      { code: "no", translation: "Norsk" },
+      { code: "en", translation: "Engelsk" },
+      { code: "en-US", translation: "Engelsk - US" },
+      { code: "da", translation: "Dansk" },
+      { code: "da-DK", translation: "Dansk - Danmark" },
+      { code: "sv", translation: "Svensk" },
+      { code: "de", translation: "Tysk" },
+      { code: "nl", translation: "Nederlandsk" },
+    ],
+  },
+  {
+    name: "Deutsch",
+    current_locale: "de",
+    chosen: false,
+    locales: ["de"],
+    translations: [
+      { code: "de", translation: "Deutsch" },
+      { code: "en", translation: "Englisch" },
+      { code: "en-US", translation: "Englisch - US" },
+      { code: "da", translation: "Dänisch" },
+      { code: "da-DK", translation: "Dänisch - Dänemark" },
+      { code: "sv", translation: "Schwedisch" },
+      { code: "no", translation: "Norwegisch" },
+      { code: "nl", translation: "Niederländisch" },
+    ],
+  },
+  {
+    name: "Nederlands",
+    current_locale: "nl",
+    chosen: false,
+    locales: ["nl"],
+    translations: [
+      { code: "nl", translation: "Nederlands" },
+      { code: "en", translation: "Engels" },
+      { code: "en-US", translation: "Engels - US" },
+      { code: "da", translation: "Deens" },
+      { code: "da-DK", translation: "Deens - Denemarken" },
+      { code: "sv", translation: "Zweeds" },
+      { code: "no", translation: "Noors" },
+      { code: "de", translation: "Duits" },
+    ],
+  },
+]);
+
+watch(
+  current_language,
+  (lang) => {
+    page_text.value.description = "This is a description in " + lang;
+  },
+  {
+    immediate: true,
+  }
+);
+
+const translations = computed(() => {
+  return all_languages.value.find(
+    (lang) =>
+      lang.current_locale === current_language.value ||
+      lang.locales.includes(current_language.value)
+  );
+});
 </script>
 
 <template>
@@ -245,8 +233,8 @@ function handleClose(open: boolean) {
         <Card class="transition-all cursor-move flex flex-row">
           <CardHeader>
             <CardTitle>{{
-              all_languages.find((lang) => lang.locales.includes(lang_code))
-                ?.name
+              translations?.translations.find((lang) => lang.code === lang_code)
+                ?.translation
             }}</CardTitle>
           </CardHeader>
           <Select
@@ -259,7 +247,7 @@ function handleClose(open: boolean) {
             <SelectContent>
               <SelectGroup>
                 <SelectItem
-                  v-for="(locale, i) in all_languages.find((lang) =>
+                  v-for="locale in all_languages.find((lang) =>
                     lang.locales.includes(lang_code)
                   )?.locales"
                   :value="locale"
@@ -294,7 +282,7 @@ function handleClose(open: boolean) {
       >
         <DialogHeader class="p-6 pb-0 flex flex-row justify-between">
           <DialogTitle class="text-2xl">{{
-            page_text.button_text + " " + search
+            page_text.button_text
           }}</DialogTitle>
           <div class="relative w-full max-w-xs items-center mr-8">
             <Input
@@ -315,7 +303,7 @@ function handleClose(open: boolean) {
           <Card
             v-for="(language, i) in all_languages
               .filter((lang) => {
-                return !lang.locales.some((item) =>
+                return !lang.locales.some((item: string) =>
                   chosen_languages.includes(item)
                 );
               })
@@ -325,7 +313,7 @@ function handleClose(open: boolean) {
                   lang.current_locale
                     .toLowerCase()
                     .includes(search.toLowerCase()) ||
-                  lang.locales.some((locale) =>
+                  lang.locales.some((locale: string) =>
                     locale.toLowerCase().includes(search.toLowerCase())
                   )
               )
@@ -341,7 +329,9 @@ function handleClose(open: boolean) {
             <label :for="language.name" class="w-full">
               <CardHeader>
                 <CardTitle class="text-xl font-medium">{{
-                  language.name
+                  translations?.translations.find(
+                    (lang) => lang.code === language.current_locale
+                  )?.translation
                 }}</CardTitle>
               </CardHeader>
             </label>

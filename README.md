@@ -35,13 +35,12 @@ This web application allows users to select and prioritize languages to display 
 
 4. **Local Storage Usage**:
 
-   - Language preferences and translations are stored in local storage as `deviceSettings` and `translations`.
-   - The `deviceSettings` key contains an array of selected language codes, dictating the order of languages.
-   - The `translations` key contains localized text for various UI elements.
+   - Language preferences and translations are stored in local storage.
+   - The storage contains an array of selected language codes, dictating the order of languages and localized text for various UI elements.
 
 5. **Cross-Tab Synchronization**:
 
-   - The application uses a `StorageEvent` listener to detect changes in local storage and update all open tabs accordingly.
+   - The application uses a `StorageEvent` listener or similar, to detect changes in local storage and update all open tabs accordingly.
 
 6. **Backend Endpoints**:
 
@@ -56,7 +55,7 @@ This web application allows users to select and prioritize languages to display 
   - Data could be stored in a NoSQL database like MongoDB for efficiency and flexibility.
   - Language data and translations can be organized by language code to optimize read performance and support easy additions of new languages.
 
-- **Proposed Schemas**:
+- **Schemas**:
   - **Languages Schema**: Each document represents a language with its corresponding translations and locales.
   - **Translations Schema**: Stores UI text in different languages to support localization.
 
