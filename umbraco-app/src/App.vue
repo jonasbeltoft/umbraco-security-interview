@@ -197,10 +197,60 @@ const all_languages = ref([
   },
 ]);
 
+const text_translations = ref([
+  {
+    LanguageCode: "en",
+    Description: "Move, add and remove new languages to display",
+    ButtonText: "Add languages",
+  },
+  {
+    LanguageCode: "en-US",
+    Description: "Move, add and remove new languages to display",
+    ButtonText: "Add languages",
+  },
+  {
+    LanguageCode: "da",
+    Description: "Flyt, tilføj og fjern nye sprog at vise",
+    ButtonText: "Tilføj sprog",
+  },
+  {
+    LanguageCode: "da-DK",
+    Description: "Flyt, tilføj og fjern nye sprog at vise",
+    ButtonText: "Tilføj sprog",
+  },
+  {
+    LanguageCode: "sv",
+    Description: "Flytta, lägg till och ta bort nya språk att visa",
+    ButtonText: "Lägg till språk",
+  },
+  {
+    LanguageCode: "no",
+    Description: "Flytt, legg til og fjern nye språk for visning",
+    ButtonText: "Legg til språk",
+  },
+  {
+    LanguageCode: "de",
+    Description:
+      "Sprachen verschieben, hinzufügen und entfernen, um sie anzuzeigen",
+    ButtonText: "Sprachen hinzufügen",
+  },
+  {
+    LanguageCode: "nl",
+    Description:
+      "Verplaats, voeg toe en verwijder nieuwe talen om weer te geven",
+    ButtonText: "Talen toevoegen",
+  },
+]);
+
 watch(
   current_language,
   (lang) => {
-    page_text.value.description = "This is a description in " + lang;
+    page_text.value.description = text_translations.value.find(
+      (text) => text.LanguageCode === lang
+    )!.Description;
+    page_text.value.button_text = text_translations.value.find(
+      (text) => text.LanguageCode === lang
+    )!.ButtonText;
   },
   {
     immediate: true,
