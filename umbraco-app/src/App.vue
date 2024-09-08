@@ -169,7 +169,9 @@ watch(
 let search = ref("");
 
 function addLanguages() {
-  console.log("Adding languages");
+  console.log(checked_languages.value);
+  chosen_languages.value.push(...checked_languages.value);
+  checked_languages.value = [];
 }
 
 function updateLocale(new_locale: string, locale: string) {
@@ -206,6 +208,24 @@ function deleteLanguage(language: any) {
 }
 
 const getItemKey = (element: string, index: number) => `${element}-${index}`;
+
+const checked_languages = ref<string[]>([]);
+
+function updateChecked(checked: boolean, lang: any) {
+  if (checked) {
+    checked_languages.value.push(lang.current_locale);
+  } else {
+    const index = checked_languages.value.indexOf(lang.current_locale);
+    checked_languages.value.splice(index, 1);
+  }
+}
+
+function handleClose(open: boolean) {
+  if (!open) {
+    search.value = "";
+    checked_languages.value = [];
+  }
+}
 </script>
 
 <template>
@@ -262,7 +282,7 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
       </template>
     </draggable>
     <!-- MARK: Add Languages Dialog / Modal -->
-    <Dialog>
+    <Dialog @update:open="handleClose">
       <!-- v-on:update:open="(open) => (open ? '' : (search = ''))" -->
       <DialogTrigger as-child>
         <Button>
@@ -294,7 +314,11 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
         <div class="flex flex-col gap-4 py-4 overflow-y-auto px-6">
           <Card
             v-for="(language, i) in all_languages
-              .filter((lang) => !lang.chosen)
+              .filter((lang) => {
+                return !lang.locales.some((item) =>
+                  chosen_languages.includes(item)
+                );
+              })
               .filter(
                 (lang) =>
                   lang.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -304,11 +328,16 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
                   lang.locales.some((locale) =>
                     locale.toLowerCase().includes(search.toLowerCase())
                   )
-              )"
+              )
+              .sort((a, b) => a.name.localeCompare(b.name))"
             :key="i"
             class="transition-all flex flex-row"
           >
-            <Checkbox :id="language.name" class="my-auto ml-6" />
+            <Checkbox
+              @update:checked="updateChecked($event, language)"
+              :id="language.name"
+              class="my-auto ml-6"
+            />
             <label :for="language.name" class="w-full">
               <CardHeader>
                 <CardTitle class="text-xl font-medium">{{
