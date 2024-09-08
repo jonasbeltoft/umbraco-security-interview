@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toValue } from "vue";
+import { ref, toValue, watch } from "vue";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,11 +28,10 @@ import {
 import draggable from "vuedraggable";
 
 const page_text = useStorage("page_text", {
-  button_text: "Tilføg sprog",
+  button_text: "Add languages",
   description: "This is a description",
 });
 
-let current_language = "";
 let all_languages = ref([
   {
     name: "Danish",
@@ -150,19 +149,23 @@ let all_languages = ref([
   },
 ]);
 
-const DEFAULT_LANGUAGES = ["da", "en"];
+const DEFAULT_LANGUAGES = ["da"];
 
 // Load chosen languages from local storage
 const chosen_languages = useStorage("chosen_languages", DEFAULT_LANGUAGES);
 
-let search = ref("");
-
-function onlanguagechange(lang: string) {
-  if (lang !== current_language) {
-    current_language = lang;
-    page_text.value.description = "This is a description in " + lang;
+watch(
+  chosen_languages,
+  (lang) => {
+    page_text.value.description = "This is a description in " + lang[0];
+  },
+  {
+    deep: true,
+    immediate: true,
   }
-}
+);
+
+let search = ref("");
 
 function addLanguages() {
   console.log("Adding languages");
@@ -180,7 +183,22 @@ function updateLocale(new_locale: string, locale: string) {
 function deleteLanguage(language: any) {
   if (chosen_languages.value.length === 1) {
     chosen_languages.value = DEFAULT_LANGUAGES.flat();
+    for (let i = 0; i < all_languages.value.length; i++) {
+      if (
+        !all_languages.value[i].locales.some((locale) =>
+          DEFAULT_LANGUAGES.includes(locale)
+        )
+      ) {
+        all_languages.value[i].chosen = false;
+      }
+    }
     return;
+  }
+
+  for (let i = 0; i < all_languages.value.length; i++) {
+    if (all_languages.value[i].name === language) {
+      all_languages.value[i].chosen = false;
+    }
   }
   const index = chosen_languages.value.indexOf(language);
   chosen_languages.value.splice(index, 1);
@@ -251,7 +269,7 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
         </Button>
       </DialogTrigger>
       <DialogContent
-        class="sm:max-w-3xl grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
+        class="sm:max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
       >
         <DialogHeader class="p-6 pb-0 flex flex-row justify-between">
           <DialogTitle class="text-2xl">{{
@@ -289,12 +307,14 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
             :key="i"
             class="transition-all flex flex-row"
           >
-            <CardHeader>
-              <CardTitle class="text-xl font-medium">{{
-                language.name
-              }}</CardTitle>
-            </CardHeader>
-            <Checkbox :id="language.name" class="my-auto" />
+            <Checkbox :id="language.name" class="my-auto ml-6" />
+            <label :for="language.name" class="w-full">
+              <CardHeader>
+                <CardTitle class="text-xl font-medium">{{
+                  language.name
+                }}</CardTitle>
+              </CardHeader>
+            </label>
           </Card>
         </div>
         <DialogFooter class="p-6 pt-0">
