@@ -4,11 +4,14 @@ Demo app and write up for Umbraco Security Engineering position
 
 ## Security issues in free trial
 
-Pass, I can't find anything in the public commercial software, as I'm not a pen tester (yet).
+I looked at the github and the issues. There were several, however these are known.
+I looked at some code in the repo, but didn't spot anything.
+I downloaded and decompiled the Nuget package using dotpeak, but also didn't find anything.
 
 ## Application writeup
 
 This web application allows users to select and prioritize languages to display the website in their preferred language. It supports multilingual text and settings synchronized across browser tabs but isolated across different sessions.
+For very detailed description see the other readme.
 
 ### Features
 
