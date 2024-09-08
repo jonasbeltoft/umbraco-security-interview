@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, toValue } from "vue";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -168,12 +168,13 @@ function addLanguages() {
   console.log("Adding languages");
 }
 
-function updateLocale(locale: string) {
-  all_languages.value.forEach((lang) => {
-    if (lang.locales.includes(locale)) {
-      lang.current_locale = locale;
-    }
-  });
+function updateLocale(new_locale: string, locale: string) {
+  const index = all_languages.value.findIndex((lang) =>
+    lang.locales.includes(new_locale)
+  );
+  all_languages.value[index].current_locale = new_locale;
+  const index2 = chosen_languages.value.findIndex((lang) => lang === locale);
+  chosen_languages.value[index2] = new_locale;
 }
 
 function deleteLanguage(language: any) {
@@ -210,11 +211,8 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
             }}</CardTitle>
           </CardHeader>
           <Select
-            :default-value="
-              all_languages.find((lang) => lang.locales.includes(lang_code))
-                ?.current_locale
-            "
-            v-on:update:model-value="updateLocale"
+            :default-value="lang_code"
+            v-on:update:model-value="updateLocale($event, lang_code)"
           >
             <SelectTrigger class="max-w-xs ml-auto my-auto mr-3">
               <SelectValue placeholder="Select a language" />
@@ -226,7 +224,7 @@ const getItemKey = (element: string, index: number) => `${element}-${index}`;
                     lang.locales.includes(lang_code)
                   )?.locales"
                   :value="locale"
-                  :key="i"
+                  :key="getItemKey"
                 >
                   {{ locale }}
                 </SelectItem>
