@@ -4,9 +4,10 @@ Demo app and write up for Umbraco Security Engineering position
 
 ## Security issues in free trial
 
-I looked at the github and the issues. There were several, however these are known.
-I looked at some code in the repo, but didn't spot anything.
-I downloaded and decompiled the Nuget package using dotpeak, but also didn't find anything.
+- I looked at the github and the issues. There were several, however these are known.
+- I looked at some code in the repo, but didn't spot anything.
+- I downloaded and decompiled the Nuget package using dotpeak, but also didn't find anything.
+- I ran the repo through Trivy, but it also came up short.
 
 ## Application writeup
 
