@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toValue, watch } from "vue";
+import { computed, ref, toValue, watch } from "vue";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -154,13 +154,14 @@ const DEFAULT_LANGUAGES = ["da"];
 // Load chosen languages from local storage
 const chosen_languages = useStorage("chosen_languages", DEFAULT_LANGUAGES);
 
+const current_language = computed(() => chosen_languages.value[0]);
+
 watch(
-  chosen_languages,
+  current_language,
   (lang) => {
-    page_text.value.description = "This is a description in " + lang[0];
+    page_text.value.description = "This is a description in " + lang;
   },
   {
-    deep: true,
     immediate: true,
   }
 );
